@@ -28,11 +28,39 @@ const images = [
 
 const slider = document.querySelector('.slider');
 const thumbnails = document.querySelector('.thumbnail-preview');
+const sliderContainer = document.querySelector('.slider-container');
+
+let counterImages = 0;
+let isOverSlider = false;
+let isNextDirection = true;
+
 const next = document.querySelector('.btn-next');
 const prev = document.querySelector('.btn-prev');
-let counterImages = 0;
+next.isNext = true;
+prev.isNext = false;
+next.addEventListener('click', handleNextPrev);
+prev.addEventListener('click', handleNextPrev);
 
 
+// eventi
+
+sliderContainer.addEventListener('mouseenter', () =>{
+  isOverSlider = true;
+})
+
+sliderContainer.addEventListener('mouseleave', ()=>{
+  isOverSlider = false;
+})
+
+slider.addEventListener('dblclick', () => {
+  isNextDirection = !isNextDirection;
+})
+
+document.addEventListener('keypress', (event) => {
+  if(event.code === 'Space'){
+    isOverSlider = !isOverSlider;
+  }
+})
 
 init();
 
@@ -40,13 +68,29 @@ function init(){
   slider.innerHTML = '';
   thumbnails.innerHTML = '';
 
-  images.forEach(image => {
+  images.forEach((image, index) => {
     slider.innerHTML += getTemplateImage(image);
-    thumbnails.innerHTML += getTemplateThumb(image);
+    thumbnails.innerHTML += getTemplateThumb(image, index);
 
   })
   
   activateImage();
+}
+
+function handleNextPrev() {
+  deactivateImage();
+  nextPrev(this.isNext)
+  activateImage();
+}
+
+function nextPrev(isNext){
+  if(isNext){
+    counterImages++;
+    if(counterImages === images.length) counterImages = 0
+  }else{
+    counterImages--;
+    if(counterImages < 0) counterImages = images.length - 1;
+  }
 }
 
 function activateImage(){
@@ -54,9 +98,10 @@ function activateImage(){
   document.getElementsByClassName('thumbnail-image')[counterImages].classList.add('active');
 }
 
-
-next.addEventListener('click', nextPrev);
-prev.addEventListener('click', nextPrev);
+function deactivateImage(){
+  document.getElementsByClassName('item')[counterImages].classList.remove('active');
+  document.getElementsByClassName('thumbnail-image')[counterImages].classList.remove('active'); 
+}
 
 function getTemplateImage(image){
   const {name, url, caption} = image;
@@ -68,12 +113,29 @@ function getTemplateImage(image){
         <p>${caption}</p>
       </div>
     </div>
-    `;
+    `
 }
 
-function getTemplateThumb (image){
+function getTemplateThumb (image, index){
   const {name, url} = image;
   return `
-  <img class="thumbnail-image" src="${url}" alt="${name}">
+  <div class="thumbnail-image" onclick="handleThumb(${index})">
+    <img src="${url}" alt="${name}">
+  </div>
   `
 }
+
+
+function handleThumb(index){
+  deactivateImage();
+  counterImages = index;
+  activateImage();
+}
+
+setInterval(()=>{
+  if(!isOverSlider){
+    deactivateImage();
+    nextPrev(isNextDirection);
+    activateImage();
+  }
+}, 2000)
