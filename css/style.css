@@ -29,10 +29,19 @@ body {
   height: 400px;
 }
 
-.slider img {
+.img-wrapper img {
   object-fit: cover;
+  width: 900px;
+  height: 400px;
+}
+
+.img-wrapper {
   width: 100%;
   height: 100%;
+}
+
+.item {
+  display: none;
 }
 
 .img-text {
@@ -77,11 +86,20 @@ body {
   text-shadow: 5px 5px 10px black;
 }
 
-.thumbnail-images {
+.thumbnail-preview {
   display: flex;
 }
 
-.thumbnail-images img {
+.thumbnail-preview img {
   width: calc(100% / 5);
   filter: brightness(0.7);
+}
+
+.active {
+  filter: brightness(1);
+  display: block;
+}
+
+img.active {
+  border: 2px solid rgba(255, 255, 255, 0.846)
 }
